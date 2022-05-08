@@ -9,24 +9,35 @@
 </head>
 
 <body>
-    <a href=""></a>
+    <div class="login">
+        <input type="text" id="username">
+        <input type="password" id="password">
+        <button id="login">login</button>
+    </div>
     <script>
-        // send a login request to the server
-        fetch('http://localhost:3000/login', {
-                method: 'POST',
-                // no cors
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: 'lochyj'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            });
+        const login = document.querySelector('#login');
+        const username = document.querySelector('#username');
+        const password = document.querySelector('#password');
+        login.addEventListener('click', () => {
+            const data = {
+                username: username.value,
+                password: password.value
+            };
+            const url = 'http://localhost/login';
+            fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                }).then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    console.log(data.refreshToken)
+                    console.log(data.accessToken)
+                    localStorage.setItem('token', data.refreshToken);
+                });
+        });
     </script>
 </body>
 

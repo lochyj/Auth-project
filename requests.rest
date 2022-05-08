@@ -1,5 +1,5 @@
-GET http://localhost:3000/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmltIiwiaWF0IjoxNjUxOTkyODQxLCJleHAiOjE2NTE5OTM0NDF9.oHkz9FdktG0etvAbe0cthY5mAkbucOp9ZA3WE9Yy4u4
+GET http://localhost/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibG9jaHlqIiwiaWF0IjoxNjUyMDAzNjUzLCJleHAiOjE2NTIwMDQyNTN9.4737NA4x5AjT79LG65bBmyEru_LLvbHxiORz3Ih9eAk
 
 ###
 
@@ -12,22 +12,22 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:4000/register
+POST http://localhost/register
 Content-Type: application/json
 
 {
   "username": "lochyj",
-  "password": "aad"
+  "password": "person"
 }
 
 ###
 
-POST http://localhost:4000/login
+POST http://localhost/login
 Content-Type: application/json
 
 {
   "username": "lochyj",
-  "password": "aad"
+  "password": "person"
 }
 
 ###
