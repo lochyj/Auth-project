@@ -29,19 +29,6 @@ const posts = [{
     }
 ]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 var corsOptions = {
     origin: process.env.CORS_ORIGIN,
     optionsSuccessStatus: 200
