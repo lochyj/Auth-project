@@ -5,14 +5,15 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const mongo = require('mongodb').MongoClient
 const bcrypt = require('bcrypt')
-const cors = require('cors')
 const url = 'mongodb://localhost:27017/'
 const dbName = 'auth'
 
 app.use(express.json())
+app.use(express.static('./src/pages/'))
 
-app.get('/', (req, res) => {
-    res.sendFile('./static/index.html', { root: __dirname })
+
+app.get('/app', authenticateToken, (req, res) => {
+    res.sendFile('./src/secure/index.html', { root: __dirname })
 })
 
 app.get('/posts', authenticateToken, (req, res) => {
@@ -29,14 +30,10 @@ const posts = [{
     }
 ]
 
-var corsOptions = {
-    origin: process.env.CORS_ORIGIN,
-    optionsSuccessStatus: 200
-}
 let refreshTokens = []
 let users = []
 updateUsers()
-app.post('/register', cors(corsOptions), async(req, res) => {
+app.post('/auth/register', async(req, res) => {
     // check if the username and password are in a json format and if not make them so
     if (!req.body.username || !req.body.password) {
         res.status(400).json({
@@ -57,7 +54,7 @@ app.post('/register', cors(corsOptions), async(req, res) => {
     }
     updateUsers()
 })
-app.post('/token', cors(corsOptions), (req, res) => {
+app.post('/auth/token', (req, res) => {
     const refreshToken = req.body.token
     if (refreshToken == null) return res.sendStatus(401)
     if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
@@ -67,11 +64,11 @@ app.post('/token', cors(corsOptions), (req, res) => {
         res.json({ accessToken: accessToken })
     })
 })
-app.delete('/logout', cors(corsOptions), (req, res) => {
+app.delete('/auth/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token !== req.body.token)
     res.sendStatus(204)
 })
-app.post('/login', cors(corsOptions), async(req, res) => {
+app.post('/auth/login', async(req, res) => {
     const username = req.body.username
     const user = users.find(user => user.username === username)
     if (user) {
