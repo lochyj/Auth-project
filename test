@@ -1,0 +1,10 @@
+{
+  req: IncomingMessage {
+    url: '/echo',
+    method: 'POST',
+    params: {},
+    query: {},
+    body: { username: 'aaaaaaa' },
+    _body: true,
+  }
+}

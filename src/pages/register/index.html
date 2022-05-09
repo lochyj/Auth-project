@@ -1,16 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
 </head>
+
 <body>
-    <form action="http://localhost/auth/register" method="post">
+    <form action="http://localhost/" method="POST">
         <input type="text" name="username" placeholder="Username">
-        <input type="password" name="password" placeholder="Password">
-        <input type="submit" value="Register">
+        <input type="submit" value="login">
     </form>
+    <script>
+        fetch('http://localhost/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: 'e',
+                password: 'aad'
+            })
+        })
+    </script>
 </body>
+
 </html>

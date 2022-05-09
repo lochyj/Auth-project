@@ -1,4 +1,4 @@
-GET http://localhost/posts
+GET http://localhost//posts
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVsaXgiLCJpYXQiOjE2NTIwNTc1OTIsImV4cCI6MTY1MjA1ODE5Mn0.4dlmU6h2UegSBibm3cf2psBKfiYpgnmhDM4jL4RxXO4
 
 ###

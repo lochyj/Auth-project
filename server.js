@@ -5,12 +5,16 @@ const app = express()
 const jwt = require('jsonwebtoken')
 const mongo = require('mongodb').MongoClient
 const bcrypt = require('bcrypt')
+var cookieParser = require('cookie-parser')
 const url = 'mongodb://localhost:27017/'
 const dbName = 'auth'
+var bodyParser = require('body-parser')
+var jsonParser = bodyParser.json()
+var urlencodedParser = bodyParser.urlencoded({ extended: true })
 
 app.use(express.json())
 app.use(express.static('./src/pages/'))
-
+app.use(cookieParser())
 
 app.get('/app', authenticateToken, (req, res) => {
     res.sendFile('./src/secure/index.html', { root: __dirname })
@@ -93,8 +97,9 @@ function generateAccessToken(user) {
 }
 
 function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
+    //const authHeader = req.headers['authorization']
+    const token = req.cookies.accessToken;
+    //const token = authHeader && authHeader.split(' ')[1]
     if (token == null) return res.sendStatus(401)
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
