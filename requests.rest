@@ -1,5 +1,5 @@
 GET http://localhost/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibG9jaHlqIiwiaWF0IjoxNjUyMDAzNjUzLCJleHAiOjE2NTIwMDQyNTN9.4737NA4x5AjT79LG65bBmyEru_LLvbHxiORz3Ih9eAk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVsaXgiLCJpYXQiOjE2NTIwNTc1OTIsImV4cCI6MTY1MjA1ODE5Mn0.4dlmU6h2UegSBibm3cf2psBKfiYpgnmhDM4jL4RxXO4
 
 ###
 
@@ -12,31 +12,31 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost/register
+POST http://localhost/auth/register
 Content-Type: application/json
 
 {
-  "username": "lochyj",
-  "password": "person"
+  "username": "felix",
+  "password": "hello"
 }
 
 ###
 
-POST http://localhost/login
+POST http://localhost/auth/login
 Content-Type: application/json
 
 {
-  "username": "lochyj",
-  "password": "person"
+  "username": "felix",
+  "password": "hello"
 }
 
 ###
 
 
 
-POST http://localhost:4000/token
+POST http://localhost/auth/token
 Content-Type: application/json
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmltIiwiaWF0IjoxNjUxOTkyODQxfQ.uVdwtGwgTBS_ctXAFbF_mq8YquRwD_H4Gk-f2Km863w"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVsaXgiLCJpYXQiOjE2NTIwNTc1NDd9.VhVs3l8U8kezLS2zfViK4MNIHDb6i5kc_WkgOaL0piY"
 }

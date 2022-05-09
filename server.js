@@ -50,9 +50,9 @@ app.post('/auth/register', async(req, res) => {
         // if not, create a new user
         const hash = await bcrypt.hash(password, 10)
         store(username, hash)
+        updateUsers()
         res.status(200).json({ message: 'User created' })
     }
-    updateUsers()
 })
 app.post('/auth/token', (req, res) => {
     const refreshToken = req.body.token
