@@ -35,15 +35,16 @@ app.get('/api/users/data', authenticateToken, (req, res) => {
     if (user == null) {
         res.sendStatus(403)
     } else {
-        console.log(getUserData(user))
-        res.json(getUserData(user));
+        // fix this
+        res.status(200).json(getUserData(user));
     }
 })
 
 // TODO: Make this
 app.post('/api/post/create', authenticateToken, (req, res) => {
     const user = getUser(req.cookies.accessToken);
-    // stuff here
+    createPost(user)
+        // stuff here
 })
 
 // IGNORE ALL BELOW
@@ -174,8 +175,9 @@ function getUserData(user) {
             if (err) {
                 console.log(err)
             }
+            Result = result
+            console.log(Result)
             client.close()
-            Result = result;
         })
     })
     return Result;
