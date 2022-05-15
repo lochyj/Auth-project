@@ -8,37 +8,51 @@ const bcrypt = require('bcrypt')
 var cookieParser = require('cookie-parser')
 const url = 'mongodb://localhost:27017/'
 const dbName = 'auth'
-var bodyParser = require('body-parser')
-var jsonParser = bodyParser.json()
-var urlencodedParser = bodyParser.urlencoded({ extended: true })
-
 app.use(express.json())
-app.use(express.static('./src/pages/'))
 app.use(cookieParser())
 
-app.get('/app', authenticateToken, (req, res) => {
-    res.sendFile('./src/secure/index.html', { root: __dirname })
+
+// PUBLIC PAGES
+app.get('/', (req, res) => {
+    res.sendFile('./src/index.html', { root: __dirname })
+})
+app.get('/register', (req, res) => {
+    res.sendFile('./src/register.html', { root: __dirname })
+})
+app.get('/login', (req, res) => {
+    res.sendFile('./src/login.html', { root: __dirname })
 })
 
-app.get('/posts', authenticateToken, (req, res) => {
-    res.json(posts.filter(post => post.username === req.user.name))
+// SECURE PAGE
+app.get('/app', authenticateToken, (req, res) => { /* Add authenticateToken to make the route secure */
+    res.sendFile('./src/app.html', { root: __dirname })
 })
 
-const posts = [{
-        username: 'Kyle',
-        title: 'Post 1'
-    },
-    {
-        username: 'Jim',
-        title: 'Post 2'
+// SECURE API
+// TODO: fix this
+app.get('/api/users/data', authenticateToken, (req, res) => {
+    const user = getUser(req.cookies.accessToken);
+    if (user == null) {
+        res.sendStatus(403)
+    } else {
+        console.log(getUserData(user))
+        res.json(getUserData(user));
     }
-]
+})
+
+// TODO: Make this
+app.post('/api/post/create', authenticateToken, (req, res) => {
+    const user = getUser(req.cookies.accessToken);
+    // stuff here
+})
+
+// IGNORE ALL BELOW
+// -------------------
 
 let refreshTokens = []
 let users = []
 updateUsers()
 app.post('/auth/register', async(req, res) => {
-    // check if the username and password are in a json format and if not make them so
     if (!req.body.username || !req.body.password) {
         res.status(400).json({
             message: 'Please provide a username and password'
@@ -46,12 +60,10 @@ app.post('/auth/register', async(req, res) => {
         return
     }
     const { username, password } = req.body
-        // check if the username is in the database
     const user = users.find(user => user.username === username)
     if (user) {
         res.status(400).json({ error: 'Username already exists' })
     } else {
-        // if not, create a new user
         const hash = await bcrypt.hash(password, 10)
         store(username, hash)
         updateUsers()
@@ -65,7 +77,7 @@ app.post('/auth/token', (req, res) => {
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403)
         const accessToken = generateAccessToken({ name: user.name })
-        res.json({ accessToken: accessToken })
+        res.cookie('accessToken', accessToken, { httpOnly: true, overwrite: true })
     })
 })
 app.delete('/auth/logout', (req, res) => {
@@ -83,7 +95,9 @@ app.post('/auth/login', async(req, res) => {
             const accessToken = generateAccessToken({ name: user.username })
             const refreshToken = jwt.sign({ name: user.username }, process.env.REFRESH_TOKEN_SECRET)
             refreshTokens.push(refreshToken)
-            res.json({ accessToken: accessToken, refreshToken: refreshToken })
+            res.cookie('accessToken', accessToken, { httpOnly: true })
+            res.cookie('refreshToken', refreshToken, { httpOnly: true })
+            res.send().status(200)
         } else {
             res.status(400).json({ error: 'Invalid credentials' })
         }
@@ -97,16 +111,22 @@ function generateAccessToken(user) {
 }
 
 function authenticateToken(req, res, next) {
-    //const authHeader = req.headers['authorization']
     const token = req.cookies.accessToken;
-    //const token = authHeader && authHeader.split(' ')[1]
     if (token == null) return res.sendStatus(401)
-
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403)
-        req.user = user
+        req.user = user;
         next()
     })
+}
+
+function getUser(token) {
+    let User;
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return null;
+        User = user;
+    })
+    return User.name;
 }
 
 function store(username, password) {
@@ -141,4 +161,23 @@ function updateUsers() {
         })
     })
 }
+
+function getUserData(user) {
+    let Result;
+    mongo.connect(url, (err, client) => {
+        if (err) {
+            console.log(err)
+        }
+        const db = client.db(dbName)
+        const collection = db.collection('data')
+        collection.find({ username: user }).toArray((err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            client.close()
+            Result = result;
+        })
+    })
+    return Result;
+};
 app.listen(80)
