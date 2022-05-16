@@ -11,11 +11,25 @@
 <body>
     This is a secure page.
     <script>
-        fetch('http://localhost/api/users/data', {
-            method: 'GET',
+        //fetch('http://localhost/api/users/data', {
+        //    method: 'GET',
+        //    headers: {
+        //        'Content-Type': 'application/json'
+        //    }
+        //}).then(
+        //    function(data) {
+        //        console.log(data);
+        //    }
+        //)
+        fetch('http://localhost/api/post/create', {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+                title: 'My second post!',
+                content: 'This is my first post!!!!'
+            })
         }).then(
             function(data) {
                 console.log(data);
