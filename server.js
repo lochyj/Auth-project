@@ -36,6 +36,7 @@ app.get('/api/users/data', authenticateToken, (req, res) => {
         res.sendStatus(403)
     } else {
         // fix this
+        console.log(getUserData(user))
         res.status(200).json(getUserData(user));
     }
 })
@@ -159,6 +160,38 @@ function updateUsers() {
             }
             users = result
             client.close()
+        })
+    })
+}
+
+function createPost(username, data) {
+    mongo.connect(url, (err, client) => {
+        if (err) {
+            console.log(err)
+        }
+        const db = client.db(dbName)
+        const collection = db.collection('data')
+        // check if the user allready has posts and append on to the end
+        collection.find({ username: username }).toArray((err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result.length == 0) {
+                collection.insertOne({ username: username, posts: [{ title: data.title, content: data.content }] }, (err, result) => {
+                    if (err) {
+                        console.log(err)
+                    }
+                    client.close()
+                })
+        
+            } else {
+                collection.updateOne({ username: username }, { $push: { posts: { title: 'test', content: 'test' } } }, (err, result) => {
+                    if (err) {
+                        console.log(err)
+                    }
+                    client.close()
+                })
+            }
         })
     })
 }
