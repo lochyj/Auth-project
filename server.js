@@ -45,8 +45,12 @@ app.get('/api/users/data', authenticateToken, (req, res) => {
 // TODO: Make this
 app.post('/api/post/create', authenticateToken, (req, res) => {
     const user = getUser(req.cookies.accessToken);
-    createPost(user, req.body)
-        // stuff here
+    try {
+        createPost(user, req.body)
+        res.sendStatus(200)
+    } catch (err) {
+        res.sendStatus(400)
+    }
 })
 
 // IGNORE ALL BELOW
