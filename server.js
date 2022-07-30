@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken')
 const mongo = require('mongodb').MongoClient
 const bcrypt = require('bcrypt')
 var cookieParser = require('cookie-parser')
-const e = require('express')
 const url = 'mongodb://localhost:27017/'
 const dbName = 'auth'
 app.use(express.json())
@@ -37,7 +36,7 @@ app.get('/api/users/data', authenticateToken, (req, res) => {
         res.sendStatus(403)
     } else {
         // fix this
-        //console.log(getUserData(user))
+        console.log(getUserData(user))
         res.status(200).json(getUserData(user));
     }
 })
@@ -56,8 +55,8 @@ app.post('/api/post/create', authenticateToken, (req, res) => {
 // IGNORE ALL BELOW
 // -------------------
 
-let refreshTokens = [];
-let users = [];
+let refreshTokens = []
+let users = []
 updateUsers()
 app.post('/auth/register', async(req, res) => {
     if (!req.body.username || !req.body.password) {
@@ -138,15 +137,15 @@ function getUser(token) {
 
 function store(username, password) {
     mongo.connect(url, (err, client) => {
-        // if (err) {
-        //     console.log(err)
-        // }
+        if (err) {
+            console.log(err)
+        }
         const db = client.db(dbName)
         const collection = db.collection('users')
         collection.insertOne({ username: username, password: password }, (err, result) => {
-            // if (err) {
-            //     console.log(err)
-            // }
+            if (err) {
+                console.log(err)
+            }
             client.close()
         })
     })
@@ -154,15 +153,15 @@ function store(username, password) {
 
 function updateUsers() {
     mongo.connect(url, (err, client) => {
-        // if (err) {
-        //     console.log(err)
-        // }
+        if (err) {
+            console.log(err)
+        }
         const db = client.db(dbName)
         const collection = db.collection('users')
         collection.find({}).toArray((err, result) => {
-            // if (err) {
-            //     console.log(err)
-            // }
+            if (err) {
+                console.log(err)
+            }
             users = result
             client.close()
         })
@@ -171,59 +170,50 @@ function updateUsers() {
 
 function createPost(username, data) {
     mongo.connect(url, (err, client) => {
-        // if (err) {
-        //     console.log(err)
-        // }
+        if (err) {
+            console.log(err)
+        }
         const db = client.db(dbName)
         const collection = db.collection('data')
+        // check if the user allready has posts and append on to the end
         collection.find({ username: username }).toArray((err, result) => {
-            // if (err) {
-            //     console.log(err)
-            // }
+            if (err) {
+                console.log(err)
+            }
             if (result.length == 0) {
                 collection.insertOne({ username: username, posts: [{ title: data.title, content: data.content }] }, (err, result) => {
-                    // if (err) {
-                    //     console.log(err)
-                    // }
+                    if (err) {
+                        console.log(err)
+                    }
                     client.close()
                 })
-
+        
             } else {
-                collection.find({ username: username, posts: [{ title: data.title, content: data.content }] }).toArray((err, result) => {
-                    // if (err) {
-                    //     console.log(err)
-                    // }
-                    if (result.length == 0) {
-                        collection.updateOne({ username: username }, { $push: { posts: { title: data.title, content: data.content } } }, (err, result) => {
-                            // if (err) {
-                            //     console.log(err)
-                            // }
-                            client.close()
-                        })
-                    } else {
-                        client.close()
+                collection.updateOne({ username: username }, { $push: { posts: { title: 'test', content: 'test' } } }, (err, result) => {
+                    if (err) {
+                        console.log(err)
                     }
+                    client.close()
                 })
             }
         })
     })
 }
 
-
 function getUserData(user) {
     let Result;
     mongo.connect(url, (err, client) => {
-        // if (err) {
-        //     console.log(err)
-        // }
+        if (err) {
+            console.log(err)
+        }
         const db = client.db(dbName)
         const collection = db.collection('data')
         collection.find({ username: user }).toArray((err, result) => {
-            // if (err) {
-            //     console.log(err)
-            // }
+            if (err) {
+                console.log(err)
+            }
             Result = result
-                //console.log(Result)
+            console.log(Result)
             client.close()
         })
     })
