@@ -30,14 +30,20 @@ app.get('/app', authenticateToken, (req, res) => { /* Add authenticateToken to m
 
 // SECURE API
 // TODO: fix this
-app.get('/api/users/data', authenticateToken, (req, res) => {
+app.get('/api/users/data', authenticateToken, async (req, res) => {
     const user = getUser(req.cookies.accessToken);
     if (user == null) {
         res.sendStatus(403)
     } else {
-        // fix this
-        console.log(getUserData(user))
-        res.status(200).json(getUserData(user));
+        var Data = await getUserData(user);
+        console.log("Get");
+        console.log(Data);
+        if (Data == undefined) {
+            res.sendStatus(404)
+        } else {
+            res.send({Data});
+        }
+        
     }
 })
 
@@ -200,7 +206,7 @@ function createPost(username, data) {
     })
 }
 
-function getUserData(user) {
+async function getUserData(user) {
     let Result;
     mongo.connect(url, (err, client) => {
         if (err) {
@@ -212,11 +218,13 @@ function getUserData(user) {
             if (err) {
                 console.log(err)
             }
-            Result = result
-            console.log(Result)
+            Result = JSON.stringify(result);
             client.close()
+            console.log("Get usr data")
+            console.log(Result)
+            return Result;
         })
     })
-    return Result;
+    
 };
 app.listen(80)
