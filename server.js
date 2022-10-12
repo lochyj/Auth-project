@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 const mongo = require('mongodb').MongoClient
 const bcrypt = require('bcrypt')
 var cookieParser = require('cookie-parser')
-const url = 'mongodb://localhost:27017/'
+const url = 'mongodb://127.0.0.1:27017/'
 const dbName = 'auth'
 app.use(express.json())
 app.use(cookieParser())
@@ -77,19 +77,31 @@ app.post('/auth/register', async(req, res) => {
     }
 })
 app.post('/auth/token', (req, res) => {
+
+    // Getting the refresh token from the requests http only cookies
     const refreshToken = req.body.token
+
+    // If there is no refresh token in the request return an error && If the refresh token does not exist in our array of refresh tokens return an error
     if (refreshToken == null) return res.sendStatus(401)
     if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403)
+
+    // Verify the refresh token, if it is valid, respond with an access token, otherwise return an error
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        // If there was a server side error return an error
         if (err) return res.sendStatus(403)
+
+        // If the refresh token is valid create a new access token, and send it to the user
         const accessToken = generateAccessToken({ name: user.name })
         res.cookie('accessToken', accessToken, { httpOnly: true, overwrite: true })
     })
 })
+
+// Delete the refresh token from the array of refresh tokens
 app.delete('/auth/logout', (req, res) => {
     refreshTokens = refreshTokens.filter(token => token !== req.body.token)
     res.sendStatus(204)
 })
+
 app.post('/auth/login', async(req, res) => {
     const username = req.body.username
     const user = users.find(user => user.username === username)
@@ -118,7 +130,10 @@ function generateAccessToken(user) {
 
 function authenticateToken(req, res, next) {
     const token = req.cookies.accessToken;
-    if (token == null) return res.sendStatus(401)
+
+    // If there is no token in the request return an error and redirect to login
+    if (token == null) return res.sendStatus(401).redirect('/login');
+
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403)
         req.user = user;
