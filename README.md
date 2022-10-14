@@ -1,5 +1,8 @@
 # JWT and NODE JS Auth
 
+## Depreciated:
+Go to the new repo: [here](https://github.com/lochyj/Authentication)
+
 ## .ENV?
 
     The env file has some example secrets
