@@ -43,7 +43,6 @@ app.get('/api/users/data', authenticateToken, async (req, res) => {
         } else {
             res.send({Data});
         }
-        
     }
 })
 
@@ -61,17 +60,17 @@ app.post('/api/post/create', authenticateToken, (req, res) => {
 // IGNORE ALL BELOW
 // -------------------
 
-let refreshTokens = []
-let users = []
-updateUsers()
+let refreshTokens = [];
+let users = [];
+updateUsers();
 app.post('/auth/register', async(req, res) => {
     if (!req.body.username || !req.body.password) {
         res.status(400).json({
             message: 'Please provide a username and password'
         })
-        return
+        return;
     }
-    const { username, password } = req.body
+    const { username, password } = req.body;
     const user = users.find(user => user.username === username)
     if (user) {
         res.status(400).json({ error: 'Username already exists' })
@@ -175,16 +174,16 @@ function store(username, password) {
 function updateUsers() {
     mongo.connect(url, (err, client) => {
         if (err) {
-            console.log(err)
+            console.log(err);
         }
-        const db = client.db(dbName)
-        const collection = db.collection('users')
+        const db = client.db(dbName);
+        const collection = db.collection('users');
         collection.find({}).toArray((err, result) => {
             if (err) {
-                console.log(err)
+                console.log(err);
             }
             users = result
-            client.close()
+            client.close();
         })
     })
 }
@@ -192,7 +191,7 @@ function updateUsers() {
 function createPost(username, data) {
     mongo.connect(url, (err, client) => {
         if (err) {
-            console.log(err)
+            console.log(err);
         }
         const db = client.db(dbName)
         const collection = db.collection('data')
@@ -242,4 +241,4 @@ async function getUserData(user) {
     })
     
 };
-app.listen(80)
+app.listen(80);
